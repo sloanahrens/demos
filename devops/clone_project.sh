@@ -96,3 +96,7 @@ python load_picker_data.py
 
 # internal server error, check uwsgi log
 tail /var/log/demos.uwsgi.log
+
+
+# find non-unicode characters in file:
+grep --color='auto' -P -n "[\x80-\xFF]" file.xml

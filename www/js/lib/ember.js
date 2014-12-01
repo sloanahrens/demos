@@ -3664,7 +3664,7 @@ define("ember-application/system/resolver",
       _logLookup: function(found, parsedName) {
         var symbol, padding;
 
-        if (found) { symbol = '[✓]'; }
+        if (found) { symbol = '[x]'; }
         else       { symbol = '[ ]'; }
 
         if (parsedName.fullName.length > 60) {
@@ -7819,7 +7819,7 @@ define("ember-handlebars/helpers/binding",
       ```
 
       All three strategies - string return value, boolean return value, and
-      hard-coded value – can be combined in a single declaration:
+      hard-coded value -- can be combined in a single declaration:
 
       ```handlebars
       <img {{bind-attr class=":class-name-to-always-apply view.someBool:class-name-if-true view.someProperty"}}>
@@ -47337,7 +47337,7 @@ define("rsvp/promise",
     /**
       Promise objects represent the eventual result of an asynchronous operation. The
       primary way of interacting with a promise is through its `then` method, which
-      registers callbacks to receive either a promise’s eventual value or the reason
+      registers callbacks to receive either a promise's eventual value or the reason
       why the promise cannot be fulfilled.
 
       Terminology
