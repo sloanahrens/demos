@@ -87,11 +87,13 @@
   {{ JS.push('js/lib/jquery.js') }}
   {{ JS.push('js/lib/jquery.flot.min.js') }}
   {{ JS.push('js/lib/handlebars.js') }}
-  {{ JS.push('js/lib/ember.js') }}
+  {{ JS.render('js/mmstats1.min.js') }}
+
+  <script type="text/javascript" src="js/lib/ember.min.js"></script>
+
   {{ JS.push('js/lib/ember-pageable.js') }}
   {{ JS.push('js/dynamic-table.js') }}
-
-  {{ JS.render('js/mmstats.min.js') }}
+  {{ JS.render('js/mmstats2.min.js') }}
 
 </body>
 </html>
