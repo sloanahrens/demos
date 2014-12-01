@@ -67,6 +67,7 @@ def prepare():
     run('sudo apt-get -y install nodejs')
     run('sudo apt-get -y install nginx')
     run('sudo apt-get -y install curl')
+    run('sudo apt-get -y install gfortran libopenblas-dev liblapack-dev')
 
 
 """
