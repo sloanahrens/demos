@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Spark/ES Matrix Mult</title>
+
+  <!-- META TAGS -->
+  {% include '_meta.html' %}
+
+  <!-- CSS -->
+  {{ CSS.push('css/dynamic-table/bootstrap.css') }}
+  {{ CSS.push('css/dynamic-table/app.css') }}
+  {{ CSS.render('css/mmstats.min.css') }}
+
+
+<!--[if lt IE 9]>
+<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+ <style>
+
+      .chart-cont {
+        position:relative; 
+        width:600px;
+      }
+
+      .chart {
+        float:left;
+        width:600px;
+        height:300px;
+      }
+
+      .marker {
+        position:absolute;
+        z-index:1000;
+        width:1px;
+        border-left: 1px solid black;
+        bottom: 0;
+        height: 300px;
+        width:  1px;
+      }
+
+      .stats {
+        font-size: 0.8em;
+        height: 1.5em;
+        display: inline-block;
+      }
+
+    </style>
+
+</head>
+<body>
+  <header class='navbar navbar-fixed-top navbar-inverse'>
+    <div class='navbar-inner'>
+      <div class='container'>
+        <a class="brand" href="/">Spark/ES Matrix Mult</a>
+      </div>
+    </div>
+  </header>
+
+  <div class='center' style="margin-left: 20px;">
+
+    <div id='ember_app_container'></div>
+
+    <footer class='footer'>
+<!--       <small>
+        by
+        <a href='http://stacksearch.com/' target='_blank'>StackSearch</a>
+      </small> -->
+      <nav>
+        <ul>
+          <li>
+            <a href="/">Home</a>
+          </li>
+        </ul>
+      </nav>
+    </footer>
+
+  </div>
+
+  <script type="text/javascript">
+    // $AJAX_ENDPOINT = "http://localhost:9200"
+    $AJAX_ENDPOINT = "http://59e7f4604f20f503000.qbox.io"
+  </script>
+
+  <script type="text/javascript" src="js/dynamic-table-mm-config.js"></script>
+
+  {{ JS.push('js/lib/jquery.js') }}
+  {{ JS.push('js/lib/jquery.flot.min.js') }}
+  {{ JS.push('js/lib/handlebars.js') }}
+  {{ JS.push('js/lib/ember.min.js') }}
+  {{ JS.push('js/lib/ember-pageable.js') }}
+  {{ JS.push('js/dynamic-table.js') }}
+
+  {{ JS.render('js/mmstats.min.js') }}
+
+</body>
+</html>
+
+

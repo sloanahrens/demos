@@ -57,10 +57,11 @@ def widget():
 
 @app.route('/picker.html')
 def picker():
-    """
-    Embeddable widget example page.
-    """
     return render_template('picker_template.html', **make_context())
+
+@app.route('/mmstats.html')
+def mmstats():
+    return render_template('mm_stats_template.html', **make_context())
 
 
 ################################
