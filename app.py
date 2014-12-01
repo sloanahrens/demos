@@ -14,6 +14,25 @@ app = Flask(__name__)
 app.jinja_env.filters['smarty'] = smarty_filter
 app.jinja_env.filters['urlencode'] = urlencode_filter
 
+@app.context_processor
+def inject_endpoint():
+    if app_config.DEPLOYMENT_TARGET == 'production':
+        domain = app_config.PRODUCTION_SERVERS[0]
+        method = 'http'
+    elif app_config.DEPLOYMENT_TARGET == 'staging':
+        domain = app_config.STAGING_SERVERS[0]
+        method = 'http'
+    else:
+        domain = '0.0.0.0:8000'
+        method = 'http'
+
+    return { 'ajax_endpoint': '%s://%s/%s' % (method, domain, app_config.PROJECT_SLUG) }
+
+
+
+################################
+# static routes
+
 # Example application views
 @app.route('/')
 def index():
@@ -26,13 +45,7 @@ def index():
         context['featured'] = json.load(f)
 
     return render_template('index.html', **context)
-
-@app.route('/comments/')
-def comments():
-    """
-    Full-page comments view.
-    """
-    return render_template('comments.html', **make_context())
+    
 
 @app.route('/widget.html')
 def widget():
@@ -41,12 +54,22 @@ def widget():
     """
     return render_template('widget.html', **make_context())
 
-@app.route('/test_widget.html')
-def test_widget():
+
+@app.route('/picker.html')
+def picker():
     """
-    Example page displaying widget at different embed sizes.
+    Embeddable widget example page.
     """
-    return render_template('test_widget.html', **make_context())
+    return render_template('picker_template.html', **make_context())
+
+
+################################
+
+
+
+
+
+################################
 
 app.register_blueprint(static.static)
 

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Picker</title>
+    <!-- META TAGS -->
+    {% include '_meta.html' %}
+
+    <!-- CSS -->
+    {{ CSS.push('less/app.less') }}
+    {% block extra_css %}{% endblock extra_css %}
+    {{ CSS.render('css/app.min.css') }}
+
+    <style>
+
+      #tickerlist {
+        list-style-type: none;
+        margin: 0;
+        padding-left: 10px;
+        font-size: 0.85em;
+        line-height: 1.5em;
+      }
+
+      .chart-cont {
+        position:relative; 
+        width:800px;
+      }
+
+      .chart {
+        float:left;
+        width:800px;
+        height:300px;
+      }
+
+      .marker {
+        position:absolute;
+        z-index:1000;
+        width:1px;
+        border-left: 1px solid black;
+        bottom: 0;
+        height: 300px;
+        width:  1px;
+      }
+
+      .stats {
+        font-size: 0.8em;
+        height: 1.5em;
+        display: inline-block;
+      }
+
+    </style>
+  </head>
+
+  <body>
+  <div class='container' style="margin-top: 50px;">
+    <div class="row">
+      <div class="col-xs-12">
+        <div id="error_message" style="display:none;" class="alert alert-danger">add ticker error</div>
+        <div id="success_message" style="display:none;" class="alert alert-success">add ticker success</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-2">
+        <div class="row">
+          <form id="add_ticker_form">
+            <input type="text" style="width:80%" class="form-control" id="add_ticker_text" placeholder="TICKER">
+            <button type="submit" id="add_ticker_btn" style="width:80%" class="btn btn-default"> 
+              Add Ticker 
+            </button>
+          </form>
+        </div>
+        <div class="row">
+          <h3>Tickers</h3>
+          <ul id="tickerlist"></ul>
+        </div>
+      </div>
+      <div class="col-xs-10">
+        <div class="row">
+          <div class="chart-cont">
+            <div id="chart1stats" class="stats pull-right">*</div>
+            <div id='chart1' class="chart"></div>
+            <div class='marker' style="display:none;"></div>
+            <div style="clear:both;"></div>
+          </div>
+        </div>
+        <div class="row">
+          <button class="unzoom btn btn-default pull-left"> 
+            Reset Zoom 
+          </button>
+        </div>
+        <div class="row">
+          <div class="chart-cont">
+            <div id="chart2stats" class="stats pull-right">*</div>
+            <div id='chart2' class="chart"></div>
+            <div class='marker' style="display:none;"></div>
+            <div style="clear:both;"></div>
+          </div>
+        </div>
+        <div class="row">
+          <button class="unzoom btn btn-default pull-left"> 
+            Reset Zoom 
+          </button>
+        </div>
+        <div class="row">
+          <div class="chart-cont">
+            <div id="chart3stats" class="stats pull-right">*</div>
+            <div id='chart3' class="chart"></div>
+            <div class='marker' style="display:none;"></div>
+            <div style="clear:both;"></div>
+          </div>
+        </div>
+        <div class="row">
+          <button class="unzoom btn btn-default pull-left"> 
+            Reset Zoom 
+          </button>
+        </div>
+        <div class="row">
+          <div class="chart-cont" style="margin-bottom: 50px;">
+            <div id="chart4stats" class="stats pull-right">*</div>
+            <div id='chart4' class="chart"></div>
+            <div class='marker' style="display:none;"></div>
+            <div style="clear:both;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--[if lt IE 9]><script src="js/lib/excanvas.min.js"></script><![endif]-->
+
+    {{ JS.push('js/lib/jquery.js') }}
+    {{ JS.push('js/lib/jquery.flot.min.js') }}
+    {{ JS.push('js/lib/jquery.flot.selection.js') }}
+
+    {{ JS.push('js/picker.js') }}
+
+    {{ JS.render('js/picker-footer.min.js') }}
+
+    <script type="text/javascript">
+      $AJAX_ENDPOINT = "{{ ajax_endpoint }}";
+    </script>
+
+  </body>
+</html>
