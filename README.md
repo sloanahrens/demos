@@ -19,5 +19,5 @@ The charts currently provided (subject to change) are as follows:
 
 Also shown are a list of "Buy" and "Sell" picks, based in a simple algorithm. If SAC is less than SACMA, but has been greater than SACMA in the last year, the ticker is marked as a "Buy" pick. If SAC is greater than SACMA, the ticker is marked as a "Sell" pick.
 
-More functionality will be added to the project as I have time. Feel free to clone/fork the repo yourself; some rudimentary installation/deployment instructions can be found [here](https://github.com/sloanahrens/picker/blob/master/deployment.sh). 
+More functionality will be added to the project as I have time. Feel free to clone/fork the repo yourself; some rudimentary installation/deployment instructions can be found in [deployment.sh](https://github.com/sloanahrens/demos/blob/master/deployment.sh). 
 
