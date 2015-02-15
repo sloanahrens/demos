@@ -438,7 +438,8 @@ def add_ticker_data(es_client, symbol, sorted_price_index_docs=None):
     #     type_name: QUOTES_MAPPING_PROPERTIES
     # })
 
-    one_period_ago = today + timedelta(weeks=-MOVING_AVERAGE_WEEKS)
+    # one_period_ago = today + timedelta(weeks=-MOVING_AVERAGE_WEEKS)
+    one_period_ago = today + timedelta(weeks=-52)
     one_period_ago_date = one_period_ago.strftime('%Y-%m-%d')
 
     pos_in_last_period = any([doc['date'] > one_period_ago_date and doc['sac_to_sacma_ratio'] > 1 for doc in bulk_data_list])

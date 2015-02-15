@@ -1,58 +1,40 @@
-{% extends '_base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Sloan Ahrens</title>
+    <!-- META TAGS -->
+    {% include '_meta.html' %}
 
-{% block header_content %}
-<header>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <h1>{{ COPY.content.project_name|smarty }}</h1>
-                <h2>{{ COPY.content.lorem_ipsum|smarty }}</h2>
-            </div>
-        </div>
+    <!-- CSS -->
+    {{ CSS.push('less/app.less') }}
+    {% block extra_css %}{% endblock extra_css %}
+    {{ CSS.render('css/app.min.css') }}
+
+  </head>
+
+  <body>
+  <div class='container' style="margin-top: 20px;">
+    <div class="row">
+      <div class="col-xs-8">
+        <h1>Sloan Ahrens</h1>
+        <h4>I'm a web developer, entrepreneur, and would-be data scientist. My primary data technology interests at the moment are Apache Spark and Elasticsearch. My favorite programming languages are Python and Scala (I'm still a Scala noob, though). I'm interested in all things "Big Data", and machine learning in particular.</h4>
+        <h4>I am a cofounder of <a href="https://www.qbox.io" target="_blank">Qbox</a>, a startup offering hosted <a href="http://www.elasticsearch.org/" target="_blank">Elasticsearch</a>.</h4>
+        <h4>Github: <a href="https://github.com/sloanahrens" target="_blank">
+          https://github.com/sloanahrens
+        </a></h4>
+        <h4>StackOverflow: <a href="http://stackoverflow.com/users/2551686/sloan-ahrens" target="_blank">
+          http://stackoverflow.com/users/2551686/sloan-ahrens
+        </a></h4>
+        <h4>LinkedIn: <a href="https://www.linkedin.com/in/sloanahrens" target="_blank">
+          https://www.linkedin.com/in/sloanahrens</a></h4>
+        <h4>Twitter: <a href="https://twitter.com/sloanahrens" target="_blank">
+          https://twitter.com/sloanahrens</a></h4>
+        <h4>I blog at: <a href="http://blog.qbox.io/" target="_blank">
+          http://blog.qbox.io/</a></h4>
+        <h4><strong>Picker</strong> demo: <a href="http://apps.sloanahrens.com/demos/picker.html" target="_blank">
+          http://apps.sloanahrens.com/demos/picker.html</a></h4>
+      </div>
     </div>
-</header>
-{% endblock %}
-
-
-{% block content %}
-<h1>{{ COPY.content.project_name }}</h1>
-
-<div id="story-meta">
-    <p class="byline">by <span>{{ COPY.content.byline }}</span></p>
-    <p class="dateblock">
-        <span class="date">{{ COPY.content.pubdate }}</span>
-        <span class="time"> {{ COPY.content.pubtime }}</span>
-    </p>
-</div>
-
-<a class="comment-button comment-button-bubble comment-drawer-toggle" href="javascript:">
-    <span class="comment-count"></span>
-</a>
-
-<a class="comment-button comment-button-article comment-drawer-toggle" data-toggle="modal" data-backdrop="static" data-target="#share-modal">
-    <span class="comment-count"></span>
-    <span class="comment-label">Share / Discuss</span>
-</a>
-
-<h2>Example COPY list</h2>
-<dl>
-    {% for row in COPY.example_list %}
-    <dt>{{ row.term }}</dt><dd>{{ row.definition }}</dd>
-    {% endfor %}
-</dl>
-
-<h2>JST example</h2>
-<p id="template-example"></p>
-{% endblock %}
-
-
-{% block wide_content %}
-<div class="row">
-    <div class="col-md-12">
-        <h2>{{ COPY.content.footer_title }}</h2>
-        <p>{{ COPY.content.lorem_ipsum }}</p>
-    </div>
-</div>
-{% endblock %}
-
-{% include '_share_modal.html' %}
+  </body>
+</html>

@@ -13,12 +13,16 @@
 
     <style>
 
+    .row {
+      margin-left: 0px;
+      padding-left: 0px;
+    }
+
       #tickerlist {
         list-style-type: none;
-        margin: 0;
-        padding-left: 10px;
         font-size: 0.85em;
         line-height: 1.5em;
+        padding-left: 5px;
       }
 
       .chart-cont {
@@ -52,9 +56,13 @@
   </head>
 
   <body>
-  <div class='container' style="margin-top: 50px;">
+  <div class='container' style="margin-top: 20px;">
     <div class="row">
       <div class="col-xs-12">
+        <h1>Picker</h1>
+        <h4>Picker is a toy stock-picker app. It uses an 86-week moving average of scaled adjusted close (adjusted closing price divided by an index value, currently SPY) as a decision boundary for <em>buy</em> versus <em>sell</em> classifications.</h4>
+        <h4><strong><em>DISCLAIMER: Don't use Picker to make investment decisions; talk to an investment professional!</em></strong></h4>
+        <h4>Available on Github here: <a href="https://github.com/sloanahrens/demos" target="_blank">https://github.com/sloanahrens/demos</a></h4>
         <div id="error_message" style="display:none;" class="alert alert-danger">add ticker error</div>
         <div id="success_message" style="display:none;" class="alert alert-success">add ticker success</div>
       </div>
@@ -70,7 +78,7 @@
           </form>
         </div>
         <div class="row">
-          <h3>Tickers</h3>
+          <h4 style="margin-bottom: 5px;">Tickers Loaded</h4>
           <ul id="tickerlist"></ul>
         </div>
       </div>
