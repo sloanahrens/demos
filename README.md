@@ -6,7 +6,7 @@ Picker
 
 Picker is a toy stock-picker application, though it is not intended to provide actual stock picking advice. Let me say that again. **Picker is not intended to provide financial advice!** Picker is intended to be a demonstration of various software development technologies, and a place for me to experiment with new ones.
 
-See it live here (works best in Chrome): [http://apps.sloanahrens.com/demos/picker.html](http://apps.sloanahrens.com/picker/picker.html)
+See it live here (works best in Chrome): [http://apps.sloanahrens.com/demos/picker.html](http://apps.sloanahrens.com/demos/picker.html)
 
 I started the project by forking the [app-template](https://github.com/nprapps/app-template) repo from the NPR development team, by following the instructions in their [blog post](http://blog.apps.npr.org/2014/09/08/how-to-setup-the-npr-app-template-for-you-and-your-news-org.html). The project provides infrastructure for setting up a web application that can be (relatively) easily deployed to Amazon EC2 and S3. Static content can be hosted from S3 (very cheaply), while the dynamic portion of the application can be hosted on EC2 servers.
 
