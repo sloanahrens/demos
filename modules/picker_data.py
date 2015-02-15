@@ -25,6 +25,8 @@ DAILY_QUOTES_INDEX_NAME = 'picker_daily_quotes'
 
 DAILY_ANALYTICS_INDEX_NAME = 'picker_daily_analytics'
 
+LOG_INDEX_NAME = 'picker_update_log'
+
 
 WEEKS_TO_DOWNLOAD = 260
 
@@ -127,7 +129,9 @@ def create_index(es_client, index_name):
 ##########
 
 
-def build_tickers_index(es_client):
+def build_tickers_index(es_client, file_path=None):
+
+    # create_index(es_client, LOG_INDEX_NAME)
 
     create_index(es_client, TICKER_SYMBOLS_INDEX_NAME)
 
@@ -154,7 +158,17 @@ def build_tickers_index(es_client):
 
     bulk_data = []
 
-    for symbol in INDEX_TICKERS + STARTING_TICKERS:
+    ticker_list = [t for t in INDEX_TICKERS]
+    if file_path:
+        with open(file_path, 'r') as f:
+            ticker_list += [l for l in f.read().splitlines()]
+    else:
+        ticker_list += STARTING_TICKERS
+
+    # print(ticker_list)
+    # return
+
+    for symbol in ticker_list:
 
         ticker_doc = {
             'symbol': symbol,
@@ -186,14 +200,35 @@ def build_quotes_index(es_client):
                               body={ "size": 1000, "query": { "match_all": {}} })
     tickers = [t['_source']['symbol'] for t in es_res['hits']['hits']]
 
-    print(tickers)
+    # print(tickers)
 
     add_ticker_data(es_client, INDEX_TICKERS[0])
 
     sorted_price_index_docs = get_sorted_index_docs(es_client, INDEX_TICKERS[0])
 
+    es_res = es_client.search(index=DAILY_QUOTES_INDEX_NAME, 
+                              doc_type=INDEX_TICKERS[0].lower(),
+                              body={
+                                "size": 1,
+                                "query": { "match_all" : {} },
+                                "sort": [ { "date": { "order": "desc" } } ]
+                              })
+    latest_data_date = es_res['hits']['hits'][0]['_source']['date']
+
+    log_doc = {
+        'update_date': datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
+        'latest_data_date': latest_data_date
+    }
+    es_client.index(index=LOG_INDEX_NAME, 
+                    doc_type='log', 
+                    body=log_doc,
+                    refresh=True)
+
     for symbol in tickers:
-        add_ticker_data(es_client, symbol, sorted_price_index_docs)
+        try:
+            add_ticker_data(es_client, symbol, sorted_price_index_docs)
+        except Exception, e:
+            print(e)
 
 
 def add_new_ticker(es_client, symbol):
@@ -240,14 +275,20 @@ def get_moving_average_key(quantity_name):
 def update_doc_ma_stats(doc, quantity_name, doc_set):
     n, min_max, mean, var, skew, kurt = stats.describe([j[quantity_name] for j in doc_set])
     doc[get_moving_average_key(quantity_name)] = {
-        'n': n,
-        'min': min_max[0],
-        'max': min_max[1],
+        # 'n': n,
+        # 'min': min_max[0],
+        # 'max': min_max[1],
         'mean': mean,
-        'var': var,
-        'skew': skew,
-        'kurt': kurt
+        # 'var': var,
+        # 'skew': skew,
+        # 'kurt': kurt
     }
+    # if doc['scaled_adj_close'] > mean:
+    #     doc['sac_dir_from_sacma'] = 'pos'
+    # else:
+    #     doc['sac_dir_from_sacma'] = 'neg'
+    # doc['sac_dist_from_sacma'] = doc['scaled_adj_close'] - mean
+    doc['sac_to_sacma_ratio'] = doc['scaled_adj_close'] / mean
 
 
 def add_ticker_data(es_client, symbol, sorted_price_index_docs=None):
@@ -331,7 +372,7 @@ def add_ticker_data(es_client, symbol, sorted_price_index_docs=None):
     sorted_docs = [doc_dict[key] for key in sorted(doc_dict.keys())]
     # pprint(sorted_docs)
     start_index = 0
-    bulk_data = []
+    bulk_data_list = []
     # print('%s sorted_docs, %s sorted_price_index_docs' % (len(sorted_docs), len(sorted_price_index_docs)))
     # print(sorted_docs[0])
     # print(sorted_price_index_docs[0])
@@ -351,19 +392,21 @@ def add_ticker_data(es_client, symbol, sorted_price_index_docs=None):
         analytics_doc['index_adj_close'] = price_index_doc['adj_close']
         analytics_doc['scaled_adj_close'] = analytics_doc['adj_close'] / price_index_doc['adj_close']
 
-        if last_doc is None:
-            analytics_doc["adj_close_simp_ret"] = 0
-            analytics_doc["adj_close_cc_ret"] = 0
-            # analytics_doc["scaled_adj_close_simp_ret"] = 0
-            # analytics_doc["scaled_adj_close_cc_ret"] = 0
-        else:
-            analytics_doc["adj_close_simp_ret"] = (analytics_doc["adj_close"] - last_doc["adj_close"]) / last_doc["adj_close"]
-            analytics_doc["adj_close_cc_ret"] = log(analytics_doc["adj_close"] / last_doc["adj_close"])
+        ## returns
+        # if last_doc is None:
+        #     analytics_doc["adj_close_simp_ret"] = 0
+        #     analytics_doc["adj_close_cc_ret"] = 0
+        #     # analytics_doc["scaled_adj_close_simp_ret"] = 0
+        #     # analytics_doc["scaled_adj_close_cc_ret"] = 0
+        # else:
+        #     analytics_doc["adj_close_simp_ret"] = (analytics_doc["adj_close"] - last_doc["adj_close"]) / last_doc["adj_close"]
+        #     analytics_doc["adj_close_cc_ret"] = log(analytics_doc["adj_close"] / last_doc["adj_close"])
 
-            # analytics_doc["scaled_adj_close_simp_ret"] = \
-            #     (analytics_doc["scaled_adj_close"] - last_doc["scaled_adj_close"]) / last_doc["scaled_adj_close"]
+        #     # analytics_doc["scaled_adj_close_simp_ret"] = \
+        #     #     (analytics_doc["scaled_adj_close"] - last_doc["scaled_adj_close"]) / last_doc["scaled_adj_close"]
 
-            # analytics_doc["scaled_adj_close_cc_ret"] = log(analytics_doc["scaled_adj_close"] / last_doc["scaled_adj_close"])
+        #     # analytics_doc["scaled_adj_close_cc_ret"] = log(analytics_doc["scaled_adj_close"] / last_doc["scaled_adj_close"])
+        
         last_doc = analytics_doc
 
         if analytics_doc['date'] < analytics_start_date:
@@ -388,18 +431,30 @@ def add_ticker_data(es_client, symbol, sorted_price_index_docs=None):
         
         #print('%s, %s, %s' % (docs_to_average[0]['date'], docs_to_average[-1]['date'], analytics_doc['date']))
 
+        bulk_data_list.append(analytics_doc)
+        
+    # print('adding mapping for %s' % type_name)
+    # res = es_client.indices.put_mapping(index=DAILY_QUOTES_INDEX_NAME, doc_type=type_name, body={
+    #     type_name: QUOTES_MAPPING_PROPERTIES
+    # })
+
+    one_period_ago = today + timedelta(weeks=-MOVING_AVERAGE_WEEKS)
+    one_period_ago_date = one_period_ago.strftime('%Y-%m-%d')
+
+    pos_in_last_period = any([doc['date'] > one_period_ago_date and doc['sac_to_sacma_ratio'] > 1 for doc in bulk_data_list])
+
+    bulk_data_list[-1]['gt_ma_in_last_period'] = pos_in_last_period
 
 
+    bulk_data = []
+    for analytics_doc in bulk_data_list:
         quote_id = '%s-%s' % (symbol, analytics_doc['date'])
         add_bulk_insert_doc_to_list(bulk_data=bulk_data, 
                                     index_name=DAILY_ANALYTICS_INDEX_NAME, 
                                     type_name=type_name, 
                                     doc=analytics_doc, 
                                     doc_id=quote_id)
-    # print('adding mapping for %s' % type_name)
-    # res = es_client.indices.put_mapping(index=DAILY_QUOTES_INDEX_NAME, doc_type=type_name, body={
-    #     type_name: QUOTES_MAPPING_PROPERTIES
-    # })
+
     print('bulk indexing into %s, type %s' % (DAILY_ANALYTICS_INDEX_NAME, type_name))
     res = es_client.bulk(index = DAILY_ANALYTICS_INDEX_NAME, body = bulk_data, refresh = True)
     # for line in res["items"]:
@@ -408,61 +463,64 @@ def add_ticker_data(es_client, symbol, sorted_price_index_docs=None):
         print('errors: %s' % res['errors'])
 
 
-    # >>> x = np.array([0, 1, 2, 3, 4])
-    # >>> dx = np.gradient(x)
-    # >>> y = x**2
-    # >>> np.gradient(y, dx)
-    # array([-0.,  2.,  4.,  6.,  8.])
+    # derivatives
 
-    doc_count = getIndexDocCount(es_client, DAILY_ANALYTICS_INDEX_NAME, type_name)
-    es_res = es_client.search(index=DAILY_ANALYTICS_INDEX_NAME, 
-                              doc_type=type_name,
-                              body={
-                                "from": 0,
-                                "size": doc_count,
-                                "query": { "match_all" : {} },
-                                "sort": [ { "date": { "order": "asc" } } ]
-                              })
-    sorted_docs = [hit['_source'] for hit in es_res['hits']['hits']]
+    # # >>> x = np.array([0, 1, 2, 3, 4])
+    # # >>> dx = np.gradient(x)
+    # # >>> y = x**2
+    # # >>> np.gradient(y, dx)
+    # # array([-0.,  2.,  4.,  6.,  8.])
 
-    # print(sorted_docs[0], sorted_docs[1])
+    # doc_count = getIndexDocCount(es_client, DAILY_ANALYTICS_INDEX_NAME, type_name)
+    # es_res = es_client.search(index=DAILY_ANALYTICS_INDEX_NAME, 
+    #                           doc_type=type_name,
+    #                           body={
+    #                             "from": 0,
+    #                             "size": doc_count,
+    #                             "query": { "match_all" : {} },
+    #                             "sort": [ { "date": { "order": "asc" } } ]
+    #                           })
+    # sorted_docs = [hit['_source'] for hit in es_res['hits']['hits']]
 
-    t = [int(datetime.strptime(doc['date'], "%Y-%m-%d").strftime("%s")) / 86400 for doc in sorted_docs]
-    print(t[0], t[-1])
+    # # print(sorted_docs[0], sorted_docs[1])
 
-    dt = np.gradient(t)
-    # print(dt[0], dt[-1])
-    # print(dt)
+    # ## gradient
+    # # t = [int(datetime.strptime(doc['date'], "%Y-%m-%d").strftime("%s")) / 86400 for doc in sorted_docs]
+    # # print(t[0], t[-1])
 
-    sacma = [doc[get_moving_average_key('scaled_adj_close')]['mean'] for doc in sorted_docs]
-    # print(sacma[0], sacma[-1])
+    # # dt = np.gradient(t)
+    # # # print(dt[0], dt[-1])
+    # # # print(dt)
 
-    d_sacma = np.gradient(sacma)
-    # print(d_sacma[0], d_sacma[-1])
+    # # sacma = [doc[get_moving_average_key('scaled_adj_close')]['mean'] for doc in sorted_docs]
+    # # # print(sacma[0], sacma[-1])
 
-    d_sacma_dt = np.gradient(sacma, dt)
-    # print(d_sacma_dt[0], d_sacma_dt[-1])
+    # # d_sacma = np.gradient(sacma)
+    # # # print(d_sacma[0], d_sacma[-1])
 
-    bulk_data = []
-    for i in range(len(sorted_docs)):
+    # # d_sacma_dt = np.gradient(sacma, dt)
+    # # # print(d_sacma_dt[0], d_sacma_dt[-1])
 
-        doc = sorted_docs[i]
+    # bulk_data = []
+    # for i in range(len(sorted_docs)):
 
-        doc['grad_scaled_adj_close_ma'] = d_sacma[i]
-        doc['time_grad_scaled_adj_close_ma'] = d_sacma_dt[i]
+    #     doc = sorted_docs[i]
 
-        quote_id = '%s-%s' % (symbol, doc['date'])
+    #     # doc['grad_scaled_adj_close_ma'] = d_sacma[i]
+    #     # doc['time_grad_scaled_adj_close_ma'] = d_sacma_dt[i]
 
-        add_bulk_insert_doc_to_list(bulk_data=bulk_data, 
-                                    index_name=DAILY_ANALYTICS_INDEX_NAME, 
-                                    type_name=type_name, 
-                                    doc=doc, 
-                                    doc_id=quote_id)
+    #     quote_id = '%s-%s' % (symbol, doc['date'])
 
-    print('bulk indexing into %s, type %s' % (DAILY_ANALYTICS_INDEX_NAME, type_name))
-    res = es_client.bulk(index = DAILY_ANALYTICS_INDEX_NAME, body = bulk_data, refresh = True)
-    if res['errors'] > 0:
-        print('errors: %s' % res['errors'])
+    #     add_bulk_insert_doc_to_list(bulk_data=bulk_data, 
+    #                                 index_name=DAILY_ANALYTICS_INDEX_NAME, 
+    #                                 type_name=type_name, 
+    #                                 doc=doc, 
+    #                                 doc_id=quote_id)
+
+    # print('bulk indexing into %s, type %s' % (DAILY_ANALYTICS_INDEX_NAME, type_name))
+    # res = es_client.bulk(index = DAILY_ANALYTICS_INDEX_NAME, body = bulk_data, refresh = True)
+    # if res['errors'] > 0:
+    #     print('errors: %s' % res['errors'])
 
 
 

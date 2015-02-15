@@ -64,7 +64,7 @@
         <div class="row">
           <form id="add_ticker_form">
             <input type="text" style="width:80%" class="form-control" id="add_ticker_text" placeholder="TICKER">
-            <button type="submit" id="add_ticker_btn" style="width:80%" class="btn btn-default"> 
+            <button type="submit" id="add_ticker_btn" style="width:80%" class="btn btn-default">
               Add Ticker 
             </button>
           </form>
@@ -75,6 +75,9 @@
         </div>
       </div>
       <div class="col-xs-10">
+        <div class="row">
+          <h3 style="margin-top: 0;">Latest data date: <span id="latest_date"></span></h3>
+        </div>
         <div class="row">
           <div class="chart-cont">
             <div id="chart1stats" class="stats pull-right">*</div>
@@ -96,7 +99,7 @@
             <div style="clear:both;"></div>
           </div>
         </div>
-        <div class="row">
+<!--         <div class="row">
           <button class="unzoom btn btn-default pull-left"> 
             Reset Zoom 
           </button>
@@ -120,6 +123,52 @@
             <div id='chart4' class="chart"></div>
             <div class='marker' style="display:none;"></div>
             <div style="clear:both;"></div>
+          </div>
+        </div> -->
+        <div class="row">
+          <hr>
+          <div>Filter: <span id="filter_rec"></span></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-5">
+            <h3>Buy (<span id="buy_count"></span>)</h3>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>sym (gf)</th>
+                  <th>ac</th>
+                  <th>sac</th>
+                  <th>sacma</th>
+                  <th>ratio</th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+          <div class="col-xs-5">
+            <h3>Sell (<span id="sell_count"></span>)</h3>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>sym (gf)</th>
+                  <th>ac</th>
+                  <th>sac</th>
+                  <th>sacma</th>
+                  <th>ratio</th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+        </div>
+        <div class="row" style="height: 500px; overflow:auto;">
+          <div class="col-xs-5">
+            <table class="table">
+              <tbody id="buy_table"></tbody>
+            </table>
+          </div>
+          <div class="col-xs-5">
+            <table class="table">
+              <tbody id="sell_table"></tbody>
+            </table>
           </div>
         </div>
       </div>

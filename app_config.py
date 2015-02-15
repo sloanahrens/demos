@@ -56,8 +56,8 @@ ASSETS_S3_BUCKET = {
     'region': 'us-west-2'
 }
 
-PRODUCTION_SERVERS = ['cron.nprapps.org']
-STAGING_SERVERS = ['54.148.221.131']
+PRODUCTION_SERVERS = ['data.sloanahrens.com']
+STAGING_SERVERS = ['data.sloanahrens.com']
 
 # Should code be deployed to the web/cron servers?
 DEPLOY_TO_SERVERS = True

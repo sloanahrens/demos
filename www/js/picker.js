@@ -22,6 +22,8 @@
 
     chartDataList: [],
 
+    recommendationResults: [],
+
     chartOptions: { 
       legend: { position: "nw" }, 
       selection: { mode: "x" },
@@ -38,7 +40,9 @@
 
       self.getTickerList();
 
-      $("#tickerlist").click(function(e) {
+      self.getRecommendations();
+
+      $("body").click(function(e) {
         // console.log(self.requestInProgress);
         if (!self.requestInProgress) {
           var ticker = $(e.target).attr("data-ticker");
@@ -47,9 +51,18 @@
             // console.debug(ticker + " clicked");
             self.clearMessages();
             self.getTickerData(ticker, self.indexTicker);
+            return false;
+          }
+          var filter = $(e.target).attr("data-filter");
+          if (filter) {
+            if (filter == "none")
+              self.displayRecommendations(self.recommendationResults, null);
+            else
+              self.displayRecommendations(self.recommendationResults, filter);
+            return false;
           }
         }
-        return false;
+        return true;
       });
 
       $("#add_ticker_form").submit(function() {
@@ -120,7 +133,7 @@
 
     executeTickerDataRequest: function(ticker, index) {
       return $.ajax({
-        url : $AJAX_ENDPOINT + "/tickerdata/search",
+        url : $AJAX_ENDPOINT + "/tickerdata",
         type: 'POST',
         contentType:"application/json",
         dataType : "json",
@@ -177,6 +190,83 @@
       });
     },
 
+    formatRecommendation: function(obj) {
+      return '<tr>' +
+        '<td>' +
+        '<a href="#" data-ticker="' + obj['sym'] + '">' + obj['sym'] + '</a>' +
+        ' [<a target="_blank" href="https://www.google.com/finance?q=' + obj['sym'] + '">gf</a>]</td>' +
+        '<td>' + obj['ac']  + '</td>' +
+        '<td>' + obj['sac']  + '</td>' +
+        '<td>' + obj['sac_ma']  + '</td>' +
+        '<td>' + obj['ratio']  + '</td>' +
+        '</tr>'
+    },
+
+    displayRecommendations: function(json, startingLetter) {
+      var self = this;
+
+      $("#latest_date").html(json['latest_data_date']);
+      
+      var sell_count = 0;
+      $("#sell_table").html("");
+      for(var i = 0; i < json['sell_hits'].length; i++){
+        var hit = json['sell_hits'][i];
+        if(startingLetter == null || startingLetter == hit['sym'][0]){
+          $("#sell_table").append(self.formatRecommendation(hit));
+          sell_count += 1;
+        }
+      }
+      $("#sell_count").html(sell_count);
+
+      var buy_count = 0;
+      $("#buy_table").html("");
+      for(var i = 0; i < json['buy_hits'].length; i++){
+        var hit = json['buy_hits'][i];
+        if(startingLetter == null || startingLetter == hit['sym'][0]){
+          $("#buy_table").append(self.formatRecommendation(hit));
+          buy_count += 1;
+        }
+      }
+      $("#buy_count").html(buy_count);
+    },
+
+    getRecommendations: function() {
+      var self = this;
+      
+      self.requestInProgress = true;
+
+      var deferredRequest = $.getJSON($AJAX_ENDPOINT + "/recommendations");
+      
+      deferredRequest.done(function(json) {
+        self.requestInProgress = false;
+        // console.debug(json);
+        self.recommendationResults = json;
+
+        self.displayRecommendations(json, null);
+
+        var startingLetters = {};
+
+        for(var i = 0; i < json['sell_hits'].length; i++){
+          var hit = json['sell_hits'][i];
+          startingLetters[hit['sym'][0]] = null;
+        }
+        for(var i = 0; i < json['buy_hits'].length; i++){
+          var hit = json['buy_hits'][i];
+          startingLetters[hit['sym'][0]] = null;
+        }
+
+        //console.log(startingLetters);
+        var lettersArray = [];
+        for(var prop in startingLetters) lettersArray.push(prop);
+        lettersArray.sort();
+        //console.log(lettersArray);
+        $("#filter_rec").append('<a href="#" data-filter="none">none</a>&nbsp;&nbsp;&nbsp;');
+        for(var i=0; i<lettersArray.length; i++){
+          $("#filter_rec").append('<a href="#" data-filter="' + lettersArray[i] + '">' + lettersArray[i] + '</a>&nbsp;&nbsp;');
+        }
+      })
+    },
+
     getTickerList: function() {
       var self = this;
       
@@ -194,7 +284,7 @@
             startsWith = ticker[0];
             $("#tickerlist").append('<li>&nbsp;</li>');
           }
-          $("#tickerlist").append('<li><a href="#" data-ticker=' + ticker + '>' + ticker + '</a></li>');
+          $("#tickerlist").append('<li><a href="#" data-ticker="' + ticker + '">' + ticker + '</a></li>');
         })
       })
     },
@@ -250,12 +340,12 @@
           [ { name: "sac", label: 'Scaled Adj Close', data: self.dataSeriesDict['sac'] },
             { name: "sac_ma", label: json.avg_weeks + '-wk SAC Mv Avg', data: self.dataSeriesDict['sac_ma'] } ],
 
-          [ { name: "d_sacma", label: 'Grad SACMA', data: self.dataSeriesDict['d_sacma'] },
-            //{ name: "d_sacma_dt", label: 'd_sacma_dt', data: self.dataSeriesDict['d_sacma_dt'] },
-            { name: "", label: '0', data: self.dataSeriesDict['zeros'] } ],
+          // [ { name: "d_sacma", label: 'Grad SACMA', data: self.dataSeriesDict['d_sacma'] },
+          //   //{ name: "d_sacma_dt", label: 'd_sacma_dt', data: self.dataSeriesDict['d_sacma_dt'] },
+          //   { name: "", label: '0', data: self.dataSeriesDict['zeros'] } ],
 
-          [ { name: "ac_cr", label: 'AC CC Ret', data: self.dataSeriesDict['ac_cr'] },
-            { name: "", label: '0', data: self.dataSeriesDict['zeros'] } ]
+          // [ { name: "ac_cr", label: 'AC CC Ret', data: self.dataSeriesDict['ac_cr'] },
+          //   { name: "", label: '0', data: self.dataSeriesDict['zeros'] } ]
         ];
 
         self.plotCharts(self.chartOptions);
