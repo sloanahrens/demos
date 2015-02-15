@@ -3,7 +3,7 @@ from elasticsearch import Elasticsearch
 from modules.picker_data import ES_HOST, LOG_INDEX_NAME 
 from modules.picker_data import build_tickers_index, build_quotes_index
 
-ticker_file = '/home/sloan/local_code/demos/tickers.txt'
+ticker_file = 'tickers.txt'
 
 es_client = Elasticsearch(hosts = [ES_HOST])
 
