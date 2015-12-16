@@ -25,10 +25,9 @@
 # ./bin/plugin -install royrusso/elasticsearch-HQ
 
 
-
-sudo add-apt-repository -y ppa:chris-lea/node.js
-sudo add-apt-repository -y ppa:webupd8team/sublime-text-3
-sudo apt-get -y update
+# sudo add-apt-repository -y ppa:chris-lea/node.js
+# sudo add-apt-repository -y ppa:webupd8team/sublime-text-3
+# sudo apt-get -y update
 
 sudo apt-get -y install software-properties-common
 sudo apt-get -y install python-software-properties python g++ make
