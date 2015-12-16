@@ -40,6 +40,7 @@ sudo apt-get -y install sublime-text-installer
 sudo apt-get -y install python-setuptools
 sudo easy_install pip
 
+
 # sudo pip install virtualenv virtualenvwrapper
 # sudo pip install elasticsearch
 # # sudo pip install numpy
@@ -51,6 +52,8 @@ sudo easy_install pip
 # git pull origin development
 
 cd ~
+
+sudo pip install virtualenv
 
 virtualenv venv
 
