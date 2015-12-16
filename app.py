@@ -23,7 +23,7 @@ def inject_endpoint():
         domain = app_config.STAGING_SERVERS[0]
         method = 'http'
     else:
-        domain = 'localhost:8000'
+        domain = 'localhost:8005'
         method = 'http'
 
     return { 'ajax_endpoint': '%s://%s/%s' % (method, domain, app_config.PROJECT_SLUG) }
