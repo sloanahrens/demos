@@ -47,10 +47,11 @@ sudo easy_install pip
 # # sudo pip install scipy
 
 # sudo apt-get -y install git
-
-# cd ~
-
 # git clone https://github.com/sloanahrens/demos.git
+# git checkout development
+# git pull origin development
+
+cd ~
 
 virtualenv venv
 
