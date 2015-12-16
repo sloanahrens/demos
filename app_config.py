@@ -99,7 +99,8 @@ DEBUG = True
 """
 COPY EDITING
 """
-COPY_GOOGLE_DOC_URL = 'https://docs.google.com/spreadsheet/ccc?key=1rqxnvuGWa5YrvSZDfsmewJaPKRR1Kl_e05NbuvlaGYg&usp=drive_web#gid=1'
+# COPY_GOOGLE_DOC_URL = 'https://docs.google.com/spreadsheet/ccc?key=1rqxnvuGWa5YrvSZDfsmewJaPKRR1Kl_e05NbuvlaGYg&usp=drive_web#gid=1'
+COPY_GOOGLE_DOC_URL = None
 
 COPY_PATH = 'data/copy.xlsx'
 
