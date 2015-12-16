@@ -34,7 +34,11 @@ sudo apt-get -y install python-software-properties python g++ make
 sudo apt-get -y install python-dev
 sudo apt-get -y install gfortran libopenblas-dev liblapack-dev
 
+sudo add-apt-repository ppa:chris-lea/node.js
+sudo apt-get -y update
 sudo apt-get -y install nodejs
+
+# sudo apt-get -y install nodejs
 sudo apt-get -y install sublime-text-installer
 
 sudo apt-get -y install python-setuptools
